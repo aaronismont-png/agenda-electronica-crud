@@ -61,6 +61,27 @@ app.put('/contactos/:id', async (req, res) => {
   res.json({ mensaje: 'Contacto actualizado con éxito', data });
 });
 
+// Ruta para eliminar un contacto (Delete)
+app.delete('/contactos/:id', async (req, res) => {
+  const { id } = req.params;
+
+  const { data, error } = await supabase
+    .from('contactos')
+    .delete()
+    .eq('id', id)
+    .select();
+
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
+
+  if (data.length === 0) {
+    return res.status(404).json({ error: 'Contacto no encontrado' });
+  }
+
+  res.json({ mensaje: 'Contacto eliminado con éxito', data });
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
