@@ -23,6 +23,22 @@ app.get('/test-db', async (req, res) => {
   res.json({ mensaje: 'Conexión exitosa a Supabase', data });
 });
 
+// Ruta para agregar un contacto (Create)
+app.post('/contactos', async (req, res) => {
+  const { nombre, telefono, email } = req.body;
+
+  const { data, error } = await supabase
+    .from('contactos')
+    .insert([{ nombre, telefono, email }])
+    .select();
+
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
+
+  res.status(201).json({ mensaje: 'Contacto agregado con éxito', data });
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
