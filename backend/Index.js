@@ -39,6 +39,28 @@ app.post('/contactos', async (req, res) => {
   res.status(201).json({ mensaje: 'Contacto agregado con éxito', data });
 });
 
+// Ruta para editar un contacto (Update)
+app.put('/contactos/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nombre, telefono, email } = req.body;
+
+  const { data, error } = await supabase
+    .from('contactos')
+    .update({ nombre, telefono, email })
+    .eq('id', id)
+    .select();
+
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
+
+  if (data.length === 0) {
+    return res.status(404).json({ error: 'Contacto no encontrado' });
+  }
+
+  res.json({ mensaje: 'Contacto actualizado con éxito', data });
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
