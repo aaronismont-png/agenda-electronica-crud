@@ -4,6 +4,18 @@ require('dotenv').config();
 const supabase = require('./db');
 
 const app = express();
+
+// Función para formatear fecha a formato legible (dd/mm/aaaa hh:mm)
+function formatearFecha(fechaISO) {
+  const fecha = new Date(fechaISO);
+  const dia = String(fecha.getDate()).padStart(2, '0');
+  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+  const anio = fecha.getFullYear();
+  const horas = String(fecha.getHours()).padStart(2, '0');
+  const minutos = String(fecha.getMinutes()).padStart(2, '0');
+  return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
+}
+
 app.use(cors());
 app.use(express.json());
 
@@ -35,6 +47,10 @@ app.post('/contactos', async (req, res) => {
   if (error) {
     return res.status(500).json({ error: error.message });
   }
+
+  if (data && data[0]) {
+  data[0].created_at = formatearFecha(data[0].created_at);
+}
 
   res.status(201).json({ mensaje: 'Contacto agregado con éxito', data });
 });
