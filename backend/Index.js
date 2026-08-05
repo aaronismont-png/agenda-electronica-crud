@@ -26,6 +26,20 @@ app.get('/', (req, res) => {
   res.send('Servidor funcionando correctamente 🚀');
 });
 
+// Ruta de login (usuario fijo para pruebas)
+app.post('/login', (req, res) => {
+  const { usuario, contrasena } = req.body;
+
+  const USUARIO_VALIDO = 'admin';
+  const CONTRASENA_VALIDA = '1234';
+
+  if (usuario === USUARIO_VALIDO && contrasena === CONTRASENA_VALIDA) {
+    return res.json({ mensaje: 'Login exitoso', token: 'token-simulado-123' });
+  }
+
+  res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+});
+
 // Ruta de prueba de conexión a Supabase
 app.get('/test-db', async (req, res) => {
   const { data, error } = await supabase.from('test').select('*');
@@ -53,6 +67,20 @@ app.post('/contactos', async (req, res) => {
 }
 
   res.status(201).json({ mensaje: 'Contacto agregado con éxito', data });
+});
+
+// Ruta para listar todos los contactos (Read)
+app.get('/contactos', async (req, res) => {
+  const { data, error } = await supabase
+    .from('contactos')
+    .select('*')
+    .order('id', { ascending: true });
+
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
+
+  res.json({ data });
 });
 
 // Ruta para editar un contacto (Update)
